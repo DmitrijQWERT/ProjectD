@@ -1,0 +1,26 @@
+
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Controller", "Controller\Controller_6_2.cppproj", "{CE6B65D6-3C47-483F-8B3A-3C79D4D1ECEE}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "OutSensor_t_p_h", "..\Sensors\OutSensor_t_p_h\OutSensor_t_p_h\OutSensor_t_p_h_6_2.cppproj", "{1F537BDB-FB0B-4A4D-A7DD-66161630D17E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE6B65D6-3C47-483F-8B3A-3C79D4D1ECEE}.Debug|AVR.ActiveCfg = Debug|AVR
+		{CE6B65D6-3C47-483F-8B3A-3C79D4D1ECEE}.Debug|AVR.Build.0 = Debug|AVR
+		{CE6B65D6-3C47-483F-8B3A-3C79D4D1ECEE}.Release|AVR.ActiveCfg = Release|AVR
+		{CE6B65D6-3C47-483F-8B3A-3C79D4D1ECEE}.Release|AVR.Build.0 = Release|AVR
+		{1F537BDB-FB0B-4A4D-A7DD-66161630D17E}.Debug|AVR.ActiveCfg = Debug|AVR
+		{1F537BDB-FB0B-4A4D-A7DD-66161630D17E}.Debug|AVR.Build.0 = Debug|AVR
+		{1F537BDB-FB0B-4A4D-A7DD-66161630D17E}.Release|AVR.ActiveCfg = Release|AVR
+		{1F537BDB-FB0B-4A4D-A7DD-66161630D17E}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
