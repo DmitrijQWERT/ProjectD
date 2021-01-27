@@ -3,10 +3,11 @@
  <FRAME activewindow="0">
   <PLACEMENT>2c0000000200000003000000ffffffffffffffffffffffffffffffff00000000000000001a05000048030000</PLACEMENT>
   <WINDOW type="default" module="ISIS"/>
+  <WINDOW type="default" module="DXP"/>
  </FRAME>
  <MODULE name="VSMDEBUG">
   <PWI>
-   <POPUP w="800" x="38" flags="00000003" y="129" h="200" pid="0" iid="-1">
+   <POPUP w="800" x="15" flags="00008003" y="53" h="200" pid="0" iid="-1">
     <PROPERTIES>
      <ITEM name="Message Column Width">542</ITEM>
      <ITEM name="ShowGrid">No</ITEM>
@@ -32,28 +33,28 @@
      <ITEM name="nItems">0</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="695" x="78" flags="00000001" y="169" h="453" pid="0" iid="6">
+   <POPUP w="695" x="29" flags="00000001" y="326" h="453" pid="0" iid="6">
     <PROPERTIES/>
    </POPUP>
-   <POPUP w="450" x="648" flags="00008023" y="511" h="253" pid="0" iid="9">
+   <POPUP w="450" x="1150" flags="00000023" y="607" h="253" pid="0" iid="9">
     <PROPERTIES>
      <ITEM name="AutoEcho">0</ITEM>
      <ITEM name="HexMode">1</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="450" x="1085" flags="00000023" y="451" h="250" pid="0" iid="11">
+   <POPUP w="450" x="707" flags="00000023" y="10" h="250" pid="0" iid="11">
     <PROPERTIES>
      <ITEM name="AutoEcho">0</ITEM>
      <ITEM name="HexMode">1</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="450" x="1057" flags="00000023" y="132" h="250" pid="0" iid="4">
+   <POPUP w="450" x="1150" flags="00000023" y="6" h="250" pid="0" iid="4">
     <PROPERTIES>
      <ITEM name="AutoEcho">0</ITEM>
      <ITEM name="HexMode">1</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="450" x="613" flags="00000023" y="142" h="250" pid="0" iid="15">
+   <POPUP w="450" x="714" flags="00000023" y="606" h="250" pid="0" iid="15">
     <PROPERTIES>
      <ITEM name="AutoEcho">0</ITEM>
      <ITEM name="HexMode">1</ITEM>

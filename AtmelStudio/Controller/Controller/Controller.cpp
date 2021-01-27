@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //
-// Name:				The program works with temperature and pressure sensors (Master)
-// Author:				Calligraff Co.
-// Date of completion:	07.10.2015
+// Name:				(Master) test RS-485 for MPC
+// Author:				Pankov D
+// Date of completion:	01.2020
 // Version:				1.0
 //
 
@@ -38,7 +38,7 @@ char c_DEVICE_MAC[4] = {0x01, 0x01, 0x01, 0x01};
 #define RX_ADDRESS_SIZE				4
 #define RX_DATA_SIZE				16
 #define RX_BUFFER_SIZE				1 + RX_ADDRESS_SIZE + RX_DATA_SIZE + 1
-#define USART_STARTPACKET			0xAA
+#define USART_STARTPACKET			0x00
 #define USART_STOPPACKET			0xBB
 // This flag is set on USART Receiver buffer overflow
 unsigned char ex_rx_index;
@@ -79,7 +79,7 @@ void UART_Init (unsigned int speed)
 }
 
 // Send to UART
-void UART_Send_Char (char data_tx)
+void UART_Send_Char (char data_tx) ////
 {
 	while ( !( UCSRA & (1<<5)) ) {}
 	RS485_TR;
@@ -90,10 +90,13 @@ void UART_Send_Char (char data_tx)
 void UART_SendString (char data_tx[])
 {
 	int i;
-	int len;
-	len = strlen( data_tx );
+	int len = 8;
+	//len = strlen( data_tx );
 	for (i=0; i < len; i++) {
+		//LEDLAMP_ON(1);
 		UART_Send_Char(data_tx[i]);
+		//_delay_ms(50);
+		//LEDLAMP_OFF(1);
 	}
 }
 
@@ -114,19 +117,22 @@ void USART_SendPacket(char rx_device_mac[4], char rx_buffer_cmd, char rx_buffer_
 												rx_buffer_cmd,
 												rx_buffer_dat,	
 												USART_STOPPACKET);
+	//LEDLAMP_ON(1);											
 	UART_SendString(tmp_tx_data);
+	//_delay_ms(50);
+	//LEDLAMP_OFF(1);
 }
 
 ISR(USART_RXC_vect)
 {
-	char status, data;
+	char status, data; ////
 	unsigned char sub_rx_index;
 	status = UCSRA;
 	data = UDR;
 	if ((status & (FRAMING_ERROR /*| PARITY_ERROR */| DATA_OVERRUN))==0)
 	{
 
-		if (data == USART_STARTPACKET)
+		if (data == USART_STARTPACKET)	// Получение стартового пакета
 		{
 			memset(ex_rx_buffer_adr, 0, sizeof(ex_rx_buffer_adr));
 			ex_rx_buffer_cmd = 0;
@@ -145,7 +151,7 @@ ISR(USART_RXC_vect)
 		
 		if (ex_rx_enable == 1)
 		{
-			if ( (ex_rx_index >= 0) && (ex_rx_index <= 4) )
+			if ( (ex_rx_index >= 0) && (ex_rx_index <= 4) ) // запись первых 4х данных
 			{
 				ex_rx_buffer_adr[ex_rx_index] = data;
 				if (ex_rx_index == 4)
@@ -157,7 +163,7 @@ ISR(USART_RXC_vect)
 					}
 				}
 				++ex_rx_index;
-			} else if (ex_rx_index == 5)
+			} else if (ex_rx_index == 5) // записываем адрес ДБК
 			{
 				ex_rx_buffer_cmd = data;
 				++ex_rx_index;
@@ -211,12 +217,12 @@ int main(void)
 	//ex_rx_data_complite = true;
 	//_delay_ms(1500);
 	//USART_SendPacket(rx_device_mac, 0xA1, ex_rx_buffer_dat1);
-	_delay_ms(1500);
-	//memset(ex_rx_buffer_dat, 0, sizeof(ex_rx_buffer_dat));
-	USART_SendPacket(rx_device_mac, 0x01, ex_rx_buffer_dat1);
+	
 	while(1)
 	{
-		
+		_delay_ms(15);
+		//memset(ex_rx_buffer_dat, 0, sizeof(ex_rx_buffer_dat));
+		USART_SendPacket(rx_device_mac, 0x01, ex_rx_buffer_dat1);
 		LEDLAMP_ON(0);
 		_delay_ms(50);
 		LEDLAMP_OFF(0);
@@ -228,6 +234,6 @@ int main(void)
 			ex_rx_data_complite = false;
 			ExchangeUART(ex_rx_buffer_cmd, ex_rx_buffer_dat1);
 		}
-		_delay_ms(99999);
+		_delay_ms(15);
 	}
 }

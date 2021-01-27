@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //
-// Name:				The program works with temperature and pressure sensors (Master)
-// Author:				Calligraff Co.
-// Date of completion:	07.10.2015
+// Name:				(Slave) test RS-485 for MPC, йаян-од
+// Author:				Pankov D
+// Date of completion:	01.2020
 // Version:				1.0
 //
 
@@ -10,7 +10,7 @@
 
 
 
-char c_DEVICE_UID[8] = {'S', '-', 'T', 'P', 'H', '/', '0', '1'};	// S-TPH/01
+//char c_DEVICE_UID[8] = {'S', '-', 'T', 'P', 'H', '/', '0', '1'};	// S-TPH/01
 char c_DEVICE_MAC[4] = {0x11, 0x11, 0x11, 0x11};
 #define DEVICE_UID					c_DEVICE_UID
 #define DEVICE_MAC					c_DEVICE_MAC
@@ -43,7 +43,7 @@ char c_DEVICE_MAC[4] = {0x11, 0x11, 0x11, 0x11};
 #define RX_ADDRESS_SIZE				4
 #define RX_DATA_SIZE				16
 #define RX_BUFFER_SIZE				1 + RX_ADDRESS_SIZE + RX_DATA_SIZE + 1
-#define USART_STARTPACKET			0xAA
+#define USART_STARTPACKET			0x00
 #define USART_STOPPACKET			0xBB
 // This flag is set on USART Receiver buffer overflow
 unsigned char ex_rx_index;
@@ -84,7 +84,7 @@ void UART_Init (unsigned int speed)
 }
 
 // Send to UART
-void UART_Send_Char (char data_tx)
+void UART_Send_Char (char data_tx)////
 {
 	while ( !( UCSRA & (1<<5)) ) {}
 	RS485_TR;
@@ -95,8 +95,8 @@ void UART_Send_Char (char data_tx)
 void UART_SendString (char data_tx[])
 {
 	int i;
-	int len;
-	len = strlen( data_tx );
+	int len = 8;
+	//len = strlen( data_tx );
 	for (i=0; i < len; i++) {
 		UART_Send_Char(data_tx[i]);
 	}
@@ -123,7 +123,7 @@ void USART_SendPacket(char rx_device_mac[4], char rx_buffer_cmd, char rx_buffer_
 
 ISR(USART_RXC_vect)
 {
-	char status, data;
+	char status, data; /////
 	//unsigned char sub_rx_index;
 	status = UCSRA;
 	data = UDR;
