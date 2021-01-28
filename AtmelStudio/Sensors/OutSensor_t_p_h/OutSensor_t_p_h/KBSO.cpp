@@ -5,18 +5,14 @@
 // Date of completion:	01.2020
 // Version:				1.0
 //
-
+// Настройка частоты МК
 #define F_CPU 8000000UL
-
-
 
 //char c_DEVICE_UID[8] = {'S', '-', 'T', 'P', 'H', '/', '0', '1'};	// S-TPH/01
 char c_DEVICE_MAC[4] = {0x11, 0x11, 0x11, 0x11};
 #define DEVICE_UID					c_DEVICE_UID
 #define DEVICE_MAC					c_DEVICE_MAC
-
-
-
+// Подключение библиотек
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -42,9 +38,9 @@ char c_DEVICE_MAC[4] = {0x11, 0x11, 0x11, 0x11};
 #define DATA_OVERRUN				( 1 << DOR )
 #define RX_ADDRESS_SIZE				4
 #define RX_DATA_SIZE				16
-#define RX_BUFFER_SIZE				1 + RX_ADDRESS_SIZE + RX_DATA_SIZE + 1
+#define RX_BUFFER_SIZE				/*1 + RX_ADDRESS_SIZE + RX_DATA_SIZE + 1*/8
 #define USART_STARTPACKET			0x00
-#define USART_STOPPACKET			0xBB
+#define USART_STOPPACKET			0xBC
 // This flag is set on USART Receiver buffer overflow
 unsigned char ex_rx_index;
 char ex_rx_buffer_adr[RX_ADDRESS_SIZE];
@@ -95,9 +91,9 @@ void UART_Send_Char (char data_tx)////
 void UART_SendString (char data_tx[])
 {
 	int i;
-	int len = 8;
+	//int len = 8;
 	//len = strlen( data_tx );
-	for (i=0; i < len; i++) {
+	for (i=0; i < RX_BUFFER_SIZE; i++) {
 		UART_Send_Char(data_tx[i]);
 	}
 }
@@ -155,11 +151,11 @@ ISR(USART_RXC_vect)
 				ex_rx_buffer_adr[ex_rx_index] = data;
 				if (ex_rx_index == 4)
 				{
-					if ( !strcat(ex_rx_buffer_adr, DEVICE_MAC) )
-					{
-						ex_rx_enable = 0;
-						ex_rx_data_complite = false;
-					}
+					//if ( !strcat(ex_rx_buffer_adr, DEVICE_MAC) )
+					//{
+					//	ex_rx_enable = 0;
+					//	ex_rx_data_complite = false;
+					//}
 				}
 				++ex_rx_index;
 			} else if (ex_rx_index == 5)
