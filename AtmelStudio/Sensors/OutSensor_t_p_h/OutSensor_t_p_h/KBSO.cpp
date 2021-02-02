@@ -32,19 +32,19 @@
 #define RX_BUFFER_SIZE				18 // Длина пакета данных
 // Параметры протокола
 #define USART_STARTPACKET 0x00	// Стартовое поле
-char ADR_DBK[2] = {0x00, 0x00};	// Адрес ДБК
-char DIEN_DBK[2] = {0x00, 0x00};	// Служебное поле ДБК - заполняется только ДКБ
-char DIAG_DBK = 0x00;	// Поле диагностики - заполняется только ДКБ
-char DAN_DBK[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};	// Поле данных
-char DATA_DBK[4] = {0x00, 0x00, 0x00, 0x00};	// Метка времени
-char CONTROL_DBK[2]	= {0x00, 0x00};	// Контрольное поле
+unsigned char ADR_DBK[2] = {0x00, 0x00};	// Адрес ДБК
+unsigned char DIEN_DBK[2] = {0x00, 0x00};	// Служебное поле ДБК - заполняется только ДКБ
+unsigned char DIAG_DBK = 0x00;	// Поле диагностики - заполняется только ДКБ
+unsigned char DAN_DBK[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};	// Поле данных
+unsigned char DATA_DBK[4] = {0x00, 0x00, 0x00, 0x00};	// Метка времени
+unsigned char CONTROL_DBK[2]	= {0x00, 0x00};	// Контрольное поле
 // Полученные данные из линии
-char ex_rx_buffer_ADRESS_DBK[2];
-char ex_rx_buffer_DIEN_DBK[2];
-char ex_rx_buffer_DIAG_DBK;
-char ex_rx_buffer_DAN_DBK[6];
-char ex_rx_buffer_DATA_DBK[4];
-char ex_rx_buffer_CONTROL_DBK[2];
+unsigned char ex_rx_buffer_ADRESS_DBK[2];
+unsigned char ex_rx_buffer_DIEN_DBK[2];
+unsigned char ex_rx_buffer_DIAG_DBK;
+unsigned char ex_rx_buffer_DAN_DBK[6];
+unsigned char ex_rx_buffer_DATA_DBK[4];
+unsigned char ex_rx_buffer_CONTROL_DBK[2];
 // This flag is set on USART Receiver buffer overflow
 unsigned char ex_rx_index;
 bool ex_rx_buffer_overflow = false;
@@ -77,7 +77,7 @@ void UART_Init (unsigned int speed)
 }
 
 // Send to UART
-void UART_Send_Char (char data_tx)////
+void UART_Send_Char (unsigned char data_tx)////
 {
 	while ( !( UCSRA & (1<<5)) ) {}
 	RS485_TR;
@@ -85,7 +85,7 @@ void UART_Send_Char (char data_tx)////
 }
 
 // Send to UART
-void UART_SendString (char data_tx[])
+void UART_SendString (unsigned char data_tx[])
 {
 	int i;
 	for (i=0; i < RX_BUFFER_SIZE; i++) {
@@ -98,34 +98,52 @@ ISR(USART_TXC_vect)
 	RS485_RS; // Установить RE DE в 0. Прием
 }
 
-void USART_SendPacket(char ADR_DBK[2], char DAN_DBK[6], char DATA_DBK[4], char CONTROL_DBK[2])
+unsigned short crc16_common(unsigned char* data, unsigned char len)
 {
-	char tmp_tx_data[RX_BUFFER_SIZE];
-	sprintf(tmp_tx_data, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",	USART_STARTPACKET,
-																	ADR_DBK[0],
-																	ADR_DBK[1],
-																	DIEN_DBK[0],
-																	DIEN_DBK[1],
-																	DIAG_DBK,
-																	DAN_DBK[0],
-																	DAN_DBK[1],
-																	DAN_DBK[2],
-																	DAN_DBK[3],
-																	DAN_DBK[4],
-																	DAN_DBK[5],
-																	DATA_DBK[0],
-																	DATA_DBK[1],
-																	DATA_DBK[2],
-																	DATA_DBK[3],
-																	CONTROL_DBK[0],
-																	CONTROL_DBK[1]
-	);
+	unsigned char y;
+	unsigned short crc;
+	crc = 0x0000;
+	while (len--)
+	{
+		crc = ((unsigned short)*data++ << 8) ^ crc;
+		for (y = 0; y < 8; y++)
+		{
+			if (crc & 0x8000)
+			crc = (crc << 1) ^ (0x8005);
+			else
+			crc = crc << 1;
+		}
+	}
+	return crc;
+}
+
+void USART_SendPacket(unsigned char ADR_DBK[2], unsigned char DAN_DBK[6], unsigned char DATA_DBK[4], unsigned char CONTROL_DBK[2])
+{
+	unsigned char tmp_tx_data[RX_BUFFER_SIZE] = {
+		USART_STARTPACKET,
+		ADR_DBK[0],
+		ADR_DBK[1],
+		DIEN_DBK[0],
+		DIEN_DBK[1],
+		DIAG_DBK,
+		DAN_DBK[0],
+		DAN_DBK[1],
+		DAN_DBK[2],
+		DAN_DBK[3],
+		DAN_DBK[4],
+		DAN_DBK[5],
+		DATA_DBK[0],
+		DATA_DBK[1],
+		DATA_DBK[2],
+		DATA_DBK[3],
+		CONTROL_DBK[0],
+		CONTROL_DBK[1]};
 	UART_SendString(tmp_tx_data);
 }
 
 ISR(USART_RXC_vect)
 {
-	char status, data; //
+	unsigned char status, data; //
 	status = UCSRA;
 	data = UDR;
 	if ((status & (FRAMING_ERROR | DATA_OVERRUN))==0)
@@ -197,7 +215,7 @@ ISR(USART_RXC_vect)
 				ex_rx_buffer_CONTROL_DBK[ex_rx_index - 16] = data;
 				break;
 				case 17:
-				ex_rx_buffer_CONTROL_DBK[ex_rx_index - 17] = data;
+				ex_rx_buffer_CONTROL_DBK[ex_rx_index - 16] = data;
 				break;
 			}
 			++ex_rx_index;
@@ -209,11 +227,42 @@ ISR(USART_RXC_vect)
 		}
 	}
 }
-void ExchangeUART(char ADR_DBK[2], char INFO_DBK[6], char DATA_DBK[4], char CONTROL_DBK[2])
+void CRC_contr(unsigned char ADR_DBK[2], unsigned char DIEN_DBK[2], unsigned char DIAG_DBK, unsigned char DAN_DBK[6], unsigned char DATA_DBK[4], unsigned char CONTROL_DBK[2])
+{
+	unsigned char crc[15] = {
+		ADR_DBK[0],
+		ADR_DBK[1],
+		DIEN_DBK[0],
+		DIEN_DBK[1],
+		DIAG_DBK,
+		DAN_DBK[0],
+		DAN_DBK[1],
+		DAN_DBK[2],
+		DAN_DBK[3],
+		DAN_DBK[4],
+		DAN_DBK[5],
+		DATA_DBK[0],
+		DATA_DBK[1],
+		DATA_DBK[2],
+		DATA_DBK[3]
+	};
+	unsigned char len = 15;
+	unsigned char ex_rx_CONTROL_DBK[2] = {0x00, 0x00};
+	unsigned short crc16 = crc16_common(crc, len);
+	ex_rx_CONTROL_DBK[0] = (crc16 & 0xFF00) >> 8;
+	ex_rx_CONTROL_DBK[1] = (crc16 & 0x00FF);
+	if ((CONTROL_DBK[0] == ex_rx_CONTROL_DBK[0]) && (CONTROL_DBK[1] == ex_rx_CONTROL_DBK[1]))
+	{
+		LEDLAMP_ON(1);
+		_delay_ms(1500);
+		LEDLAMP_OFF(1);
+	}
+}
+void ExchangeUART(unsigned char ADR_DBK[2], unsigned char DAN_DBK[6], unsigned char DATA_DBK[4], unsigned char CONTROL_DBK[2])
 {
 	if ((ADR_DBK[0] == 0x01) && ADR_DBK[1] == 0x5E) // Активация устройства
 	{
-		USART_SendPacket(ex_rx_buffer_ADRESS_DBK, ex_rx_buffer_DAN_DBK, ex_rx_buffer_DATA_DBK, ex_rx_buffer_CONTROL_DBK);
+		USART_SendPacket(ADR_DBK, DAN_DBK, DATA_DBK, CONTROL_DBK);
 	}
 }
 int main(void)
@@ -226,6 +275,7 @@ int main(void)
 	while(1)
     {
 		_delay_ms(1);
+		CRC_contr(ex_rx_buffer_ADRESS_DBK, ex_rx_buffer_DIEN_DBK, ex_rx_buffer_DIAG_DBK, ex_rx_buffer_DAN_DBK, ex_rx_buffer_DATA_DBK, ex_rx_buffer_CONTROL_DBK);
 		if (ex_rx_data_complite)
 		{
 			ex_rx_data_complite = false;
