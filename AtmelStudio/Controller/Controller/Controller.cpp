@@ -82,7 +82,7 @@ void UART_Init (unsigned int speed)
 // Send to UART
 void UART_Send_Char (unsigned char data_tx) ////
 {
-	while ( !( UCSRA & (1<<5)) ) {}
+	while ( !( UCSRA & (1<<UDRE)) ) {}
 	RS485_TR;
 	UDR = data_tx;
 }
@@ -288,7 +288,7 @@ int main(void)
 	USART_SendPacket(ADR_DBK, DAN_DBK, DATA_DBK, CONTROL_DBK);
 	while(1)
 	{
-		_delay_ms(1);
+		//_delay_ms(1);
 		if (ex_rx_data_complite)
 		{
 			ex_rx_data_complite = false;

@@ -60,6 +60,17 @@ void LEDLAMP_OFF(unsigned int n_pin)
 {
 	PORTC &= ~( 1 << n_pin );
 }
+//Timer/Counter2 PWM
+void PWM_INIT()
+{
+	PORTB=0x00;
+	DDRB=0x00;
+	ASSR=0x00;
+	TCCR2 |= (1<<WGM20)|(1<<COM21)|(1<<WGM21)|(1<<CS22)|(1<<CS21)|(1<<CS20);
+	TCNT2=0x00;
+	TIMSK=0x00;
+	OCR2=0x00;
+}
 
 void UART_Init (unsigned int speed)
 {
@@ -79,7 +90,7 @@ void UART_Init (unsigned int speed)
 // Send to UART
 void UART_Send_Char (unsigned char data_tx)////
 {
-	while ( !( UCSRA & (1<<5)) ) {}
+	while ( !( UCSRA & (1<<UDRE)) ) {}
 	RS485_TR;
 	UDR = data_tx;
 }
@@ -254,12 +265,16 @@ void CRC_contr(unsigned char ADR_DBK[2], unsigned char DIEN_DBK[2], unsigned cha
 	if ((CONTROL_DBK[0] == ex_rx_CONTROL_DBK[0]) && (CONTROL_DBK[1] == ex_rx_CONTROL_DBK[1]))
 	{
 		LEDLAMP_ON(1);
-		_delay_ms(1500);
+		//_delay_ms(500);
 		LEDLAMP_OFF(1);
+		if ((ADR_DBK[0] == 0x01) && ADR_DBK[1] == 0x5E) // Активация устройства
+		{
+			OCR2=0x7F;
+		}
 	}
 }
 void ExchangeUART(unsigned char ADR_DBK[2], unsigned char DAN_DBK[6], unsigned char DATA_DBK[4], unsigned char CONTROL_DBK[2])
-{
+{	
 	if ((ADR_DBK[0] == 0x01) && ADR_DBK[1] == 0x5E) // Активация устройства
 	{
 		USART_SendPacket(ADR_DBK, DAN_DBK, DATA_DBK, CONTROL_DBK);
@@ -267,6 +282,7 @@ void ExchangeUART(unsigned char ADR_DBK[2], unsigned char DAN_DBK[6], unsigned c
 }
 int main(void)
 {
+	PWM_INIT();
 	UART_Init(8); //115200
 	DDRD |= ( 1 << PD3);	// порт на выход
 	RS485_RS; // Установить RE DE в 0. Прием
@@ -274,7 +290,6 @@ int main(void)
 	sei();
 	while(1)
     {
-		_delay_ms(1);
 		CRC_contr(ex_rx_buffer_ADRESS_DBK, ex_rx_buffer_DIEN_DBK, ex_rx_buffer_DIAG_DBK, ex_rx_buffer_DAN_DBK, ex_rx_buffer_DATA_DBK, ex_rx_buffer_CONTROL_DBK);
 		if (ex_rx_data_complite)
 		{

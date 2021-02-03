@@ -3,31 +3,31 @@ Controller.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000458  00000000  00000000  00000094  2**1
+  0 .text         0000044c  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000006  00800060  00000458  000004ec  2**0
+  1 .data         00000006  00800060  0000044c  000004e0  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          0000001f  00800066  00800066  000004f2  2**0
+  2 .bss          0000001f  00800066  00800066  000004e6  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  000004f2  2**0
+  3 .comment      00000030  00000000  00000000  000004e6  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000524  2**2
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000518  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000078  00000000  00000000  00000560  2**0
+  5 .debug_aranges 00000078  00000000  00000000  00000554  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00000c38  00000000  00000000  000005d8  2**0
+  6 .debug_info   00000b9f  00000000  00000000  000005cc  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000774  00000000  00000000  00001210  2**0
+  7 .debug_abbrev 00000718  00000000  00000000  0000116b  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   0000055a  00000000  00000000  00001984  2**0
+  8 .debug_line   00000486  00000000  00000000  00001883  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000174  00000000  00000000  00001ee0  2**2
+  9 .debug_frame  00000174  00000000  00000000  00001d0c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    000005d9  00000000  00000000  00002054  2**0
+ 10 .debug_str    0000058e  00000000  00000000  00001e80  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000005fb  00000000  00000000  0000262d  2**0
+ 11 .debug_loc    000005b5  00000000  00000000  0000240e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000068  00000000  00000000  00002c28  2**0
+ 12 .debug_ranges 00000068  00000000  00000000  000029c3  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -84,7 +84,7 @@ Disassembly of section .text:
   82:	10 e0       	ldi	r17, 0x00	; 0
   84:	a0 e6       	ldi	r26, 0x60	; 96
   86:	b0 e0       	ldi	r27, 0x00	; 0
-  88:	e8 e5       	ldi	r30, 0x58	; 88
+  88:	ec e4       	ldi	r30, 0x4C	; 76
   8a:	f4 e0       	ldi	r31, 0x04	; 4
   8c:	02 c0       	rjmp	.+4      	; 0x92 <__do_copy_data+0x10>
   8e:	05 90       	lpm	r0, Z+
@@ -107,7 +107,7 @@ Disassembly of section .text:
   a4:	b2 07       	cpc	r27, r18
   a6:	e1 f7       	brne	.-8      	; 0xa0 <.do_clear_bss_loop>
   a8:	0e 94 eb 01 	call	0x3d6	; 0x3d6 <main>
-  ac:	0c 94 2a 02 	jmp	0x454	; 0x454 <_exit>
+  ac:	0c 94 24 02 	jmp	0x448	; 0x448 <_exit>
 
 000000b0 <__bad_interrupt>:
   b0:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -463,7 +463,7 @@ void ExchangeUART(unsigned char ADR_DBK[2], unsigned char DAN_DBK[6], unsigned c
  38e:	60 f7       	brcc	.-40     	; 0x368 <__vector_11+0xde>
  390:	e6 5d       	subi	r30, 0xD6	; 214
  392:	ff 4f       	sbci	r31, 0xFF	; 255
- 394:	0c 94 24 02 	jmp	0x448	; 0x448 <__tablejump2__>
+ 394:	0c 94 1e 02 	jmp	0x43c	; 0x43c <__tablejump2__>
  398:	ff 91       	pop	r31
  39a:	ef 91       	pop	r30
  39c:	bf 91       	pop	r27
@@ -551,55 +551,43 @@ int main(void)
  412:	83 e8       	ldi	r24, 0x83	; 131
  414:	90 e0       	ldi	r25, 0x00	; 0
  416:	0e 94 9f 00 	call	0x13e	; 0x13e <_Z16USART_SendPacketPhS_S_S_>
-	#else
-		//round up by default
-		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
-	#endif
-
-	__builtin_avr_delay_cycles(__ticks_dc);
- 41a:	8f ec       	ldi	r24, 0xCF	; 207
- 41c:	97 e0       	ldi	r25, 0x07	; 7
- 41e:	01 97       	sbiw	r24, 0x01	; 1
- 420:	f1 f7       	brne	.-4      	; 0x41e <__LOCK_REGION_LENGTH__+0x1e>
- 422:	00 c0       	rjmp	.+0      	; 0x424 <__LOCK_REGION_LENGTH__+0x24>
- 424:	00 00       	nop
 	while(1)
 	{
-		_delay_ms(1);
+		//_delay_ms(1);
 		if (ex_rx_data_complite)
- 426:	80 91 66 00 	lds	r24, 0x0066	; 0x800066 <__data_end>
- 42a:	88 23       	and	r24, r24
- 42c:	b1 f3       	breq	.-20     	; 0x41a <__LOCK_REGION_LENGTH__+0x1a>
+ 41a:	80 91 66 00 	lds	r24, 0x0066	; 0x800066 <__data_end>
+ 41e:	88 23       	and	r24, r24
+ 420:	f1 f3       	breq	.-4      	; 0x41e <__LOCK_REGION_LENGTH__+0x1e>
 		{
 			ex_rx_data_complite = false;
- 42e:	10 92 66 00 	sts	0x0066, r1	; 0x800066 <__data_end>
+ 422:	10 92 66 00 	sts	0x0066, r1	; 0x800066 <__data_end>
 		}
 	}
 }
 void ExchangeUART(unsigned char ADR_DBK[2], unsigned char DAN_DBK[6], unsigned char DATA_DBK[4], unsigned char CONTROL_DBK[2])
 {
 	USART_SendPacket(ADR_DBK, DAN_DBK, DATA_DBK, CONTROL_DBK);
- 432:	29 e6       	ldi	r18, 0x69	; 105
- 434:	30 e0       	ldi	r19, 0x00	; 0
- 436:	4b e6       	ldi	r20, 0x6B	; 107
- 438:	50 e0       	ldi	r21, 0x00	; 0
- 43a:	6f e6       	ldi	r22, 0x6F	; 111
- 43c:	70 e0       	ldi	r23, 0x00	; 0
- 43e:	88 e7       	ldi	r24, 0x78	; 120
- 440:	90 e0       	ldi	r25, 0x00	; 0
- 442:	0e 94 9f 00 	call	0x13e	; 0x13e <_Z16USART_SendPacketPhS_S_S_>
- 446:	e9 cf       	rjmp	.-46     	; 0x41a <__LOCK_REGION_LENGTH__+0x1a>
+ 426:	29 e6       	ldi	r18, 0x69	; 105
+ 428:	30 e0       	ldi	r19, 0x00	; 0
+ 42a:	4b e6       	ldi	r20, 0x6B	; 107
+ 42c:	50 e0       	ldi	r21, 0x00	; 0
+ 42e:	6f e6       	ldi	r22, 0x6F	; 111
+ 430:	70 e0       	ldi	r23, 0x00	; 0
+ 432:	88 e7       	ldi	r24, 0x78	; 120
+ 434:	90 e0       	ldi	r25, 0x00	; 0
+ 436:	0e 94 9f 00 	call	0x13e	; 0x13e <_Z16USART_SendPacketPhS_S_S_>
+ 43a:	ef cf       	rjmp	.-34     	; 0x41a <__LOCK_REGION_LENGTH__+0x1a>
 
-00000448 <__tablejump2__>:
- 448:	ee 0f       	add	r30, r30
- 44a:	ff 1f       	adc	r31, r31
- 44c:	05 90       	lpm	r0, Z+
- 44e:	f4 91       	lpm	r31, Z
- 450:	e0 2d       	mov	r30, r0
- 452:	09 94       	ijmp
+0000043c <__tablejump2__>:
+ 43c:	ee 0f       	add	r30, r30
+ 43e:	ff 1f       	adc	r31, r31
+ 440:	05 90       	lpm	r0, Z+
+ 442:	f4 91       	lpm	r31, Z
+ 444:	e0 2d       	mov	r30, r0
+ 446:	09 94       	ijmp
 
-00000454 <_exit>:
- 454:	f8 94       	cli
+00000448 <_exit>:
+ 448:	f8 94       	cli
 
-00000456 <__stop_program>:
- 456:	ff cf       	rjmp	.-2      	; 0x456 <__stop_program>
+0000044a <__stop_program>:
+ 44a:	ff cf       	rjmp	.-2      	; 0x44a <__stop_program>
